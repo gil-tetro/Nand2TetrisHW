@@ -1,0 +1,137 @@
+/**
+ * The Gun class represents a gun that can be drawn on the screen, shoot bullets,
+ * and dispose of its memory when it is no longer needed.
+ * 
+ * The gun has a position (x, y) and a bullet that is associated with it. The
+ * bullet has a speed that is specified when the gun is created. The gun can be
+ * drawn on the screen at a specified location, and the bullet can be made to
+ * move, explode at a specified address, and disappear. The gun can also check
+ * if the bullet has hit something, and dispose of its own memory when it is
+ * no longer needed.
+ */
+
+
+class Gun {
+    // Gun position (x, y)
+    field int x, y;
+    // Associated bullet
+    field Bullet bullet;
+    // Speed of the bullet when it is fired
+    field int bulletSpeed;
+
+    /**
+     * Constructor for the Gun class
+     * @param int input_x: The initial x position of the gun
+     * @param int input_y: The initial y position of the gun
+     * @param int input_speed: The speed of the bullet when it is fired
+     */
+    constructor Gun new(int input_x, int input_y, int input_speed) {
+        let x = input_x;
+        let y = input_y;
+        let bulletSpeed = input_speed;
+        let bullet = Bullet.new(bulletSpeed);
+        do drawGun(4001);
+        return this;
+    }
+
+    /**
+     * Draws the gun on the screen at the specified location
+     * @param int location: The location on the screen where the gun should be drawn
+     */
+    method void drawGun(int location) {
+        var int memoryAddress; 
+        let memoryAddress = 16384+location;
+        // column 0
+        do Memory.poke(memoryAddress, -64);
+        do Memory.poke(memoryAddress +32, 252);
+        do Memory.poke(memoryAddress +64, 116);
+        do Memory.poke(memoryAddress +96, 508);
+        do Memory.poke(memoryAddress +128, -4068);
+        do Memory.poke(memoryAddress +160, 12);
+        do Memory.poke(memoryAddress +192, 12);
+        do Memory.poke(memoryAddress +224, -1);
+        do Memory.poke(memoryAddress +256, 32766);
+        do Memory.poke(memoryAddress +288, 16380);
+        do Memory.poke(memoryAddress +320, 16380);
+        do Memory.poke(memoryAddress +352, 16380);
+        do Memory.poke(memoryAddress +384, 32760);
+        do Memory.poke(memoryAddress +416, -8);
+        do Memory.poke(memoryAddress +448, 4092);
+        do Memory.poke(memoryAddress +480, 4092);
+        do Memory.poke(memoryAddress +512, 4092);
+        do Memory.poke(memoryAddress +544, 2044);
+        do Memory.poke(memoryAddress +576, 2046);
+        do Memory.poke(memoryAddress +608, 1022);
+        do Memory.poke(memoryAddress +640, 1023);
+        do Memory.poke(memoryAddress +672, 1023);
+        do Memory.poke(memoryAddress +704, 1023);
+        do Memory.poke(memoryAddress +736, 1023);
+        do Memory.poke(memoryAddress +768, 514);
+        do Memory.poke(memoryAddress +800, 1020);
+        // column 1
+        do Memory.poke(memoryAddress +1, 7);
+        do Memory.poke(memoryAddress +33, -4);
+        do Memory.poke(memoryAddress +65, -8);
+        do Memory.poke(memoryAddress +129, -1);
+        do Memory.poke(memoryAddress +193, -256);
+        do Memory.poke(memoryAddress +225, 511);
+        do Memory.poke(memoryAddress +257, 198);
+        do Memory.poke(memoryAddress +289, 134);
+        do Memory.poke(memoryAddress +321, 198);
+        do Memory.poke(memoryAddress +353, 68);
+        do Memory.poke(memoryAddress +385, 96);
+        do Memory.poke(memoryAddress +417, 24);
+        do Memory.poke(memoryAddress +449, 7);
+        // column 2
+        do Memory.poke(memoryAddress +2, 240);
+        do Memory.poke(memoryAddress +34, 415);
+        do Memory.poke(memoryAddress +66, 399);
+        do Memory.poke(memoryAddress +98, 384);
+        do Memory.poke(memoryAddress +130, 255);
+        do Memory.poke(memoryAddress +162, 224);
+        do dispose();
+        return;
+    }
+
+    /**
+     * Makes the bullet move
+     */
+    method void shoot() {
+        do bullet.move();
+        return;
+    }
+
+    /**
+     * Makes the bullet explode at the specified address
+     * @param int address: The address where the bullet should explode
+     */
+    method void blast(int address) {
+        do bullet.explode(address);
+        return;
+    }
+
+    /**
+     * Returns whether the bullet has hit something
+     * @return boolean: True if the bullet has hit something, False otherwise
+     */
+    method boolean hasHit() {
+        return bullet.hasHit();
+    }
+
+    /**
+     * Makes the bullet disappear and disposes of the memory used by the gun
+     */
+    method void disappear() {
+        do bullet.disappear();
+        do dispose();
+        return;
+    }
+
+    /**
+     * Disposes of the memory used by the gun
+     */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}

@@ -1,0 +1,113 @@
+/**
+ * The Bullet class represents a bullet that can be fired from a gun.
+ * It has a speed and position, and can move, disappear, explode,
+ * and determine whether it has hit a target.
+ */
+
+class Bullet {
+    // The speed at which the bullet travels
+    field int speed;
+
+    // The x-coordinate of the bullet's position
+    field int xCoordinate;
+
+    /**
+     * Constructor for creating a new bullet object.
+     *
+     * @param input_speed The speed at which the bullet travels
+     */
+    constructor Bullet new(int input_speed) {
+        let xCoordinate = 0;
+        let speed = input_speed;
+        return this;
+    }
+
+    /**
+     * Draws the bullet on the screen.
+     */
+    method void draw_bullet() {
+        do Screen.drawCircle((xCoordinate + 60), 125, 3);
+        return;
+    }
+
+    /**
+     * Moves the bullet along a line.
+     */
+    method void move() {
+        do Screen.setColor(true);
+        do draw_bullet();
+        if (xCoordinate < (400 - 32 - speed)) {
+            do Screen.setColor(false);
+            do draw_bullet();
+            let xCoordinate = xCoordinate + speed;
+            do Screen.setColor(true);
+            do draw_bullet();
+        }
+        return;
+    }
+
+    /**
+     * Makes the bullet disappear from the screen and disposes it.
+     */
+    method void disappear() {
+        /* erase the bullet, and dispose it*/
+        do Screen.setColor(false);
+        do draw_bullet();
+        do dispose();
+        return;
+    }
+
+    /**
+     * Makes the bullet explode at a given location on the screen.
+     *
+     * @param location The location on the screen where the bullet explodes
+     */
+    method void explode(int location) {
+        var int memAddress;
+        let memAddress = 16384 + location;
+        do Memory.poke(memAddress + 0, 8192);
+        do Memory.poke(memAddress + 32, 30734);
+        do Memory.poke(memAddress + 64, 15388);
+        do Memory.poke(memAddress + 96, 2108);
+        do Memory.poke(memAddress + 128, 56);
+        do Memory.poke(memAddress + 160, 16384);
+        do Memory.poke(memAddress + 192, 10294);
+        do Memory.poke(memAddress + 224, 31806);
+        do Memory.poke(memAddress + 256, 10294);
+        do Memory.poke(memAddress + 288, 16384);
+        do Memory.poke(memAddress + 320, 8);
+        do Memory.poke(memAddress + 352, 10268);
+        do Memory.poke(memAddress + 384, 31948);
+        do Memory.poke(memAddress + 416, 14542);
+        do Memory.poke(memAddress + 448, 24710);
+        do Memory.poke(memAddress + 480, 0);
+        do Sys.wait(1000);
+        do Screen.setColor(false);
+        do Screen.drawRectangle(465, 118, 483, 135);
+        return;
+    }
+
+        /**
+     * Determines whether the bullet has hit the target.
+     *
+     * @return true if the bullet has hit the target, false otherwise
+     */
+    method boolean hasHit() {
+        if (xCoordinate > (400 - 32 - speed)) {
+            return true;
+        }
+        if (xCoordinate = (400 - 32 - speed)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Disposes of the bullet object.
+     */
+    method void dispose() {
+        do Memory.deAlloc(this);
+        return;
+    }
+}
+

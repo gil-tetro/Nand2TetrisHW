@@ -1,0 +1,216 @@
+/**
+ * The Target class represents a target that can be drawn on the screen and fired upon.
+ * The target moves up and down, and the player can score points by hitting the target
+ * with a bullet. The score is calculated based on the distance of the bullet's impact
+ * from the center of the target.
+ */
+ class Target {
+    field int y;
+    field int return_value;
+    field int current_score;
+    field int attempts;
+    field int speed;
+
+    /**
+     * Constructs a new Target object
+     * @param input_speed - the speed at which the target will move
+     */
+    constructor Target new(int input_speed) {
+        let speed = input_speed;
+        let return_value = 0;
+        let attempts = 5;
+        let y = 0;
+        return this;
+    }
+
+    /**
+     * Draws the target on the screen
+     * @param setter determines whether the target is shown or hidden
+     */
+    method void draw_target(boolean setter) {
+        do Screen.setColor(setter);
+        do Screen.drawRectangle(504, y, 511, y + 95);
+        do Screen.drawRectangle(496, (y + 16), 503, (y + 16 + 63));
+        do Screen.drawRectangle(488, (y + 32), 495, (y + 32 + 31));
+        do Screen.drawRectangle(484, (y + 40), 487, (y + 40 + 15));
+        do Screen.setColor(false);
+        do Screen.drawRectangle(491, (y + 35), 493, (y + 60));
+        return;
+    }
+
+    /**
+     * Controls the movement of the target
+     * @param gun the gun object that will be used to fire at the target
+     */
+    method void move(Gun gun) {
+        // control the target to move up and down
+        var boolean set;
+        var boolean flag;
+        var boolean moving_down;
+        var boolean fired;
+        var int key;
+        let flag = true;
+        let moving_down = true;
+        let fired = false;
+        while (flag) {
+            let key = Keyboard.keyPressed();
+            if (key = 32 & ~(fired)) {
+                let fired = true;
+            }
+            if (fired) {
+                do gun.shoot();
+            }
+            if (gun.hasHit() & attempts > 0) {
+                let current_score = calc_score();
+                let attempts = attempts - 1;
+                let return_value = return_value + current_score;
+                do gun.disappear();
+                do gun.blast(3805);
+                do show_score();
+                do Sys.wait(1000);
+                let gun = Gun.new(0, 0, speed);
+                let fired = false;
+            }
+            if (attempts = 0) {
+                return;
+            }
+            if (y < 159 & (moving_down)) {
+                do move_down();
+                let y = y + 1;
+            }
+            if (y = 159) {
+                let moving_down = false;
+            }
+            if (y > 0 & ~(moving_down)) {
+                do move_up();
+                let y = y - 1;
+            }
+            if (y = 0) {
+                let moving_down = true;
+            }
+        }
+        return;
+    }
+
+    /**
+     * Calculates the absolute difference between two integers
+     * @param a the first integer
+     * @param b the second integer
+     * @return the absolute difference between a and b
+     */
+    method int abs(int a, int b) {
+        if (a > b) {
+            return (a - b);
+        }
+        return (b - a);
+    }
+
+    /**
+     * Calculates the score based on the distance of the bullet's impact from the center of the target
+     * @return the score earned for this shot
+     */
+    method int calc_score() {
+        var int center;
+        var int diff;
+        let center = y + 48;
+        let diff = abs(120, center);
+        if (diff < 10) {
+            return 100;
+        }
+        if (diff < 20) {
+            return 80;
+        }
+        if (diff < 30) {
+            return 60;
+        }
+        if (diff < 40) {
+            return 40;
+        }
+        if (diff < 50) {
+            return 20;
+        }
+        return 0;
+    }
+
+    /**
+     * Moves the target down by one unit
+     */
+    method void move_down() {
+        do Screen.setColor(true);
+        do Screen.drawLine(504, 95 + y + 1, 511, 95 + y + 1);
+        do Screen.drawLine(496, y + 16 + 63 + 1, 503, y + 16 + 63 + 1);
+        do Screen.drawLine(488, y + 32 + 31 + 1, 495, y + 32 + 31 + 1);
+        do Screen.drawLine(484, y + 40 + 15 + 1, 487, y + 40 + 15 + 1);
+        do Screen.drawLine(491, (y + 35), 493, (y + 35)); 
+        do Screen.setColor(false);
+        do Screen.drawLine(504, y, 511, y);
+        do Screen.drawLine(496, y+16, 503, y+16);
+        do Screen.drawLine(488, y+32, 495, y+32);
+        do Screen.drawLine(484, y+40, 487, y+40);
+        do Screen.drawLine(491, (y + 60 + 1), 493, (y + 60 + 1));
+        do Sys.wait(10);
+        return;
+    }
+
+    /**
+     * Moves the target up by one unit
+     */
+    method void move_up() {
+        do Screen.setColor(true);
+        do Screen.drawLine(504, y-1, 511, y-1);
+        do Screen.drawLine(496, y+16-1, 503, y+16-1);
+        do Screen.drawLine(488, y+32-1, 495, y+32-1);
+        do Screen.drawLine(484, y+40-1, 487, y+40-1);
+        do Screen.drawLine(491, y+60-1, 493, y+60-1);
+        do Screen.setColor(false);
+        do Screen.drawLine(504, 95 + y, 511, 95 + y);
+        do Screen.drawLine(496, y + 16 + 63, 503, y + 16 + 63);
+        do Screen.drawLine(488, y + 32 + 31, 495, y + 32 + 31);
+        do Screen.drawLine(484, y + 40 + 15, 487, y + 40 + 15);
+        do Screen.drawLine(491, (y + 35 - 1), 493, (y + 35 - 1));
+        do Sys.wait(10);
+        return;
+    }
+
+    /**
+     * Displays the current score on the screen
+     */
+    method void show_score() {
+        do Output.moveCursor(3, 20);
+        do Output.printString("YOUR CURRENT SCORE IS:");
+        do Output.moveCursor(3, 45);
+        do Output.printString("   "); 
+        do Output.moveCursor(3, 43);
+        do Output.printInt(current_score);
+        do Output.moveCursor(5, 20);
+        do Output.printString("NUMBER OF BULLETS LEFT:");
+        do Output.moveCursor(5, 43);
+        do Output.printInt(attempts);
+        do Output.moveCursor(7, 20);
+        do Output.printString("YOUR TOTAL SCORE IS:");
+        do Output.moveCursor(7, 40);
+        do Output.printInt(return_value);
+        return;
+    }
+
+
+    /**
+     * Displays the score at the end of the game
+     */
+    method void show_final() {
+        do Output.moveCursor(7, 20);
+        do Output.printString("YOUR TOTAL SCORE IS:");
+        do Output.moveCursor(7, 40);
+        do Output.printInt(return_value);
+        return;
+    }
+
+    /**
+     * Disposes of the memory allocated for the target object
+     */
+    method void dispose() {
+        do gun.disappear();
+        do Memory.deAlloc(this);
+        return;
+    }
+}

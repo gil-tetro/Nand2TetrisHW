@@ -1,0 +1,74 @@
+/**
+* The Target Shooting game allows the player to shoot at a moving target and earn points based on their accuracy.
+* The game is played in rounds, and the player can choose the difficulty level at the beginning of each round.
+* The game is won when the player runs out of attempts, and the final score is displayed at the end.
+*/
+
+class Main {
+    /**
+     * The main method runs the game. It allows the player to choose the difficulty level,
+     * displays instructions, and controls the gameplay.
+     */
+    function void main() {
+        // variables for controlling the game
+        var Gun gun;
+        var Target target;
+        var boolean flag;
+        var int speed;
+        var boolean game_on;
+        var int restart;
+
+        // game loop
+        let game_on = true;
+        while (game_on) {
+            // difficulty level selection loop
+            let flag = true;
+            while (flag) {
+                do Output.moveCursor(1, 21);
+                do Output.printString("- SHOOT THE TARGET -");
+                do Output.moveCursor(3, 21);
+                do Output.printString("CHOOSE THE DIFFICULTY:");
+                do Output.moveCursor(5, 19);
+                do Output.printString("1: EASY, 2:MEDIUM, 3:HARD");
+                do Output.moveCursor(10, 30);
+                let speed = Keyboard.readInt("");
+                if ((speed = 1) | (speed = 2) | (speed = 3)) {
+                    let flag = false;
+                } 
+            }
+
+            // display instructions and run game
+            do Output.moveCursor(15,20);
+            do Output.printString("PRESS SPACE TO SHOOT");
+            do Sys.wait(1500);
+            do Screen.clearScreen();
+            let speed = 6 / speed; // adjust speed based on difficulty level
+            let target = Target.new(speed); // create new Target object
+            do target.show_score(); // display current score
+            let gun = Gun.new(0,0,(speed)); // create new Gun object
+            do target.draw_target(true); // draw the target
+            do target.move(gun); // control the movement of the target and gameplay
+            do Screen.clearScreen();
+            do target.show_final(); // display final score
+            do Sys.wait(1000);
+            
+            // prompt player to play again or quit
+            do Output.moveCursor(10, 19);
+            do Output.printString("PLAY AGAIN? 1: YES, 2: NO");
+            do Output.moveCursor(13, 30);
+            let restart =  Keyboard.readInt("");
+            if (~(restart=1)) {
+                // if player decides to quit
+                do Output.moveCursor(10, 18);
+                do Screen.clearScreen();
+                do Output.printString("THANK YOU FOR PLAYING :)");
+                do Sys.wait(2000);
+                do Screen.clearScreen();
+                do Sys.wait(2000);
+                return;
+            }
+            do Screen.clearScreen();
+        }
+        return;
+    }
+}
